@@ -1,0 +1,6 @@
+sample,lane,fastq_1,fastq_2
+NA12878_normal,L001,data/reads/tiny_n_L001_R1_xxx.fastq.gz,data/reads/tiny_n_L001_R2_xxx.fastq.gz
+NA12878_normal,L002,data/reads/tiny_n_L002_R1_xxx.fastq.gz,data/reads/tiny_n_L002_R2_xxx.fastq.gz
+NA12878_normal,L004,data/reads/tiny_n_L004_R1_xxx.fastq.gz,data/reads/tiny_n_L004_R2_xxx.fastq.gz
+NA12878_normal,L007,data/reads/tiny_n_L007_R1_xxx.fastq.gz,data/reads/tiny_n_L007_R2_xxx.fastq.gz
+NA12878_normal,L008,data/reads/tiny_n_L008_R1_xxx.fastq.gz,data/reads/tiny_n_L008_R2_xxx.fastq.gz
