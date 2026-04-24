@@ -21,7 +21,7 @@ process TRIMMOMATIC {
     trimmomatic PE ${r1} ${r2} \
         ${meta.id}_${meta.lane}_R1_paired.fastq.gz ${meta.id}_${meta.lane}_R1_unpaired.fastq.gz \
         ${meta.id}_${meta.lane}_R2_paired.fastq.gz ${meta.id}_${meta.lane}_R2_unpaired.fastq.gz \
-        ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 \
+        ILLUMINACLIP:/usr/local/share/trimmomatic-0.40-0/adapters/TruSeq3-PE.fa:2:30:10 \
         SLIDINGWINDOW:4:15 \
         LEADING:3 TRAILING:3 \
         MINLEN:36
