@@ -4,6 +4,8 @@ include { FASTQC } from './modules/fastqc.nf'
 include { TRIMMOMATIC } from './modules/trimmomatic.nf'
 include { FASTQC as FASTQC_TRIMMED } from './modules/fastqc.nf'
 include { BWA_MEM } from './modules/bwamem.nf'
+include { SAMTOOLS_MERGE } from './modules/samtoolsmerge.nf'
+include { GATK_DUPLICATES } from './modules/gatkduplicates.nf'
 
 workflow {
 
@@ -35,7 +37,14 @@ workflow {
 
     BWA_MEM(TRIMMOMATIC.out.reads, ch_fasta, ch_index)
 
-    // TODO: groupTuple on BWA_MEM.out.bam to merge lanes before MarkDuplicates
+    BWA_MEM.out.bam
+    	.map { meta, bam -> [meta.id, meta, bam] } 		// key by sample id
+    	.groupTuple()									// collect all lanes per sample
+    	.map { id, metas, bams -> [metas[0], bams] } 	// drop the key, keep first meta + bam list
+    	.set { ch_bams_to_merge }
+    
+    SAMTOOLS_MERGE(ch_bams_to_merge)
+    GATK_DUPLICATES(SAMTOOLS_MERGE.out.bam)
 
     publish:
     fastqc_zip = FASTQC.out.zip
@@ -45,6 +54,10 @@ workflow {
     fastqc_trimmed_zip = FASTQC_TRIMMED.out.zip
     fastqc_trimmed_html = FASTQC_TRIMMED.out.html
     bwa_mem_bam = BWA_MEM.out.bam
+    samtools_merge_bam = SAMTOOLS_MERGE.out.bam
+    samtools_merge_bai = SAMTOOLS_MERGE.out.bai
+    gatk_duplicates_bam = GATK_DUPLICATES.out.bam
+    gatk_duplicates_metrics = GATK_DUPLICATES.out.metrics
     
 }
 
@@ -69,5 +82,17 @@ output {
     }
     bwa_mem_bam {
         path 'bwa_mem_bam'
+    }
+    samtools_merge_bam {
+        path 'samtools_merge'
+    }
+    samtools_merge_bai {
+        path 'samtools_merge'
+    }
+    gatk_duplicates_bam {
+        path 'gatk_duplicates'
+    }
+    gatk_duplicates_metrics {
+        path 'gatk_duplicates'
     }
 }

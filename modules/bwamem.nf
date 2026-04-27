@@ -16,7 +16,6 @@ process BWA_MEM {
     tuple val(meta), path("${meta.id}_${meta.lane}.bam"),   emit: bam
 
     script:
-    // TODO: What exactly does a read group string do, and can we parameterize this?
     def rg = "@RG\\tID:${meta.id}_${meta.lane}\\tSM:${meta.id}\\tPL:ILLUMINA\\tLB:${meta.id}_lib"
     def (r1, r2) = reads
     """
