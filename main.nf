@@ -29,21 +29,24 @@ workflow {
     TRIMMOMATIC(ch_reads)
     FASTQC_TRIMMED(TRIMMOMATIC.out.reads)
 
-    // Collect all index files as a single channel value
+    // Collect just the fasta file, no indices
     ch_fasta = Channel.value(file(params.fasta))
-    ch_index = Channel.fromPath("${params.fasta}.*").collect()
     // "hg38.analysisSet.fa.gz.*" matches .amb, .ann, .bwt, .pac, .sa
     // but NOT hg38.analysisSet.fa.gz itself
+    ch_index = Channel.fromPath("${params.fasta}.*").collect()
 
     BWA_MEM(TRIMMOMATIC.out.reads, ch_fasta, ch_index)
 
+    // Merging samples sequenced across multiple lanes
+    // TODO: Groovy syntax, def vs no def in dynamic closure?
+    // - Does groupTuple always key off of the first element?
     BWA_MEM.out.bam
     	.map { meta, bam -> [meta.id, meta, bam] } 		// key by sample id
     	.groupTuple()									// collect all lanes per sample
     	.map { id, metas, bams -> [metas[0], bams] } 	// drop the key, keep first meta + bam list
-    	.set { ch_bams_to_merge }
+    	.set { ch_bams_merged }
     
-    SAMTOOLS_MERGE(ch_bams_to_merge)
+    SAMTOOLS_MERGE(ch_bams_merged)
     GATK_DUPLICATES(SAMTOOLS_MERGE.out.bam)
 
     publish:
@@ -61,6 +64,7 @@ workflow {
     
 }
 
+// TODO: Compare against original output syntax (per-process)
 output {
     fastqc_zip {
         path 'fastqc'

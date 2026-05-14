@@ -9,13 +9,15 @@ process BWA_MEM {
 
     input:
     tuple val(meta), path(reads)
-    path fasta 
-    path index // accessory files only - staged alongside fasta
+    path fasta
+    // indices not referred to directly, but scanned for by bwa mem
+    path index 
 
     output:
     tuple val(meta), path("${meta.id}_${meta.lane}.bam"),   emit: bam
 
     script:
+    // Read group string required by GATK downstream
     def rg = "@RG\\tID:${meta.id}_${meta.lane}\\tSM:${meta.id}\\tPL:ILLUMINA\\tLB:${meta.id}_lib"
     def (r1, r2) = reads
     """
