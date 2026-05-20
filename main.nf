@@ -49,6 +49,11 @@ workflow {
     SAMTOOLS_MERGE(ch_bams_merged)
     GATK_DUPLICATES(SAMTOOLS_MERGE.out.bam)
 
+    // BQSR(
+    // // So we're getting another bam file from GATK MarkDuplicates,
+    // // Do we need another bai file?p        
+    // )
+
     publish:
     fastqc_zip = FASTQC.out.zip
     fastqc_html = FASTQC.out.html
@@ -60,6 +65,7 @@ workflow {
     samtools_merge_bam = SAMTOOLS_MERGE.out.bam
     samtools_merge_bai = SAMTOOLS_MERGE.out.bai
     gatk_duplicates_bam = GATK_DUPLICATES.out.bam
+    gatk_duplicates_bai = GATK_DUPLICATES.out.bai
     gatk_duplicates_metrics = GATK_DUPLICATES.out.metrics
     
 }
@@ -94,6 +100,9 @@ output {
         path 'samtools_merge'
     }
     gatk_duplicates_bam {
+        path 'gatk_duplicates'
+    }
+    gatk_duplicates_bai {
         path 'gatk_duplicates'
     }
     gatk_duplicates_metrics {
