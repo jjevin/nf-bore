@@ -6,6 +6,7 @@ include { FASTQC as FASTQC_TRIMMED } from './modules/fastqc.nf'
 include { BWA_MEM } from './modules/bwamem.nf'
 include { SAMTOOLS_MERGE } from './modules/samtoolsmerge.nf'
 include { GATK_DUPLICATES } from './modules/gatkduplicates.nf'
+include { GATK_BQSR } from './modules/gatkbqsr.nf'
 
 workflow {
 
@@ -49,10 +50,16 @@ workflow {
     SAMTOOLS_MERGE(ch_bams_merged)
     GATK_DUPLICATES(SAMTOOLS_MERGE.out.bam)
 
-    // BQSR(
-    // // So we're getting another bam file from GATK MarkDuplicates,
-    // // Do we need another bai file?p        
-    // )
+    GATK_BQSR(
+        GATK_DUPLICATES.out.bam,
+        GATK_DUPLICATES.out.bai,
+        params.fasta,
+        params.fasta_fai,
+        params.fasta_dict,
+        params.fasta_gzi,
+        params.dbsnp,
+        params.dbsnp_tbi,
+    )
 
     publish:
     fastqc_zip = FASTQC.out.zip
@@ -67,6 +74,9 @@ workflow {
     gatk_duplicates_bam = GATK_DUPLICATES.out.bam
     gatk_duplicates_bai = GATK_DUPLICATES.out.bai
     gatk_duplicates_metrics = GATK_DUPLICATES.out.metrics
+    gatk_bqsr_bam = GATK_BQSR.out.bam
+    gatk_bqsr_bai = GATK_BQSR.out.bai
+    gatk_bqsr_table = GATK_BQSR.out.table
     
 }
 
@@ -107,5 +117,14 @@ output {
     }
     gatk_duplicates_metrics {
         path 'gatk_duplicates'
+    }
+    gatk_bqsr_bam {
+        path 'gatk_bqsr'
+    }
+    gatk_bqsr_bai {
+        path 'gatk_bqsr'
+    }
+    gatk_bqsr_table {
+        path 'gatk_bqsr'
     }
 }
