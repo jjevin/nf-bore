@@ -7,6 +7,7 @@ include { BWA_MEM } from './modules/bwamem.nf'
 include { SAMTOOLS_MERGE } from './modules/samtoolsmerge.nf'
 include { GATK_DUPLICATES } from './modules/gatkduplicates.nf'
 include { GATK_BQSR } from './modules/gatkbqsr.nf'
+include { GATK_GVCF } from './modules/gatkgvcf.nf'
 
 workflow {
 
@@ -61,6 +62,15 @@ workflow {
         params.dbsnp_tbi,
     )
 
+    GATK_GVCF(
+        GATK_BQSR.out.bam,
+        GATK_BQSR.out.bai,
+        params.fasta,
+        params.fasta_fai,
+        params.fasta_dict,
+        params.fasta_gzi
+    )
+    
     publish:
     fastqc_zip = FASTQC.out.zip
     fastqc_html = FASTQC.out.html
@@ -77,6 +87,7 @@ workflow {
     gatk_bqsr_bam = GATK_BQSR.out.bam
     gatk_bqsr_bai = GATK_BQSR.out.bai
     gatk_bqsr_table = GATK_BQSR.out.table
+    gatk_gvcf_vcf = GATK_GVCF.out.vcf
     
 }
 
@@ -126,5 +137,8 @@ output {
     }
     gatk_bqsr_table {
         path 'gatk_bqsr'
+    }
+    gatk_gvcf_vcf {
+        path 'gatk_gvcf'
     }
 }
