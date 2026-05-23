@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 
-process GATK_GVCF {
+process GATK_HAPLOTYPE {
 
     tag "${meta.id}"
 
