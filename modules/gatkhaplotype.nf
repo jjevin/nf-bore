@@ -15,7 +15,8 @@ process GATK_HAPLOTYPE {
     path fasta_gzi
     
     output:
-    tuple val(meta), path("${meta.id}.g.vcf.gz"), emit: vcf
+    tuple val(meta), path("${meta.id}.g.vcf.gz"), 	  emit: gvcf
+    tuple val(meta), path("${meta.id}.g.vcf.gz.tbi"), emit: tbi
 
     script:
     """

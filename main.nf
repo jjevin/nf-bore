@@ -8,6 +8,7 @@ include { SAMTOOLS_MERGE } from './modules/samtoolsmerge.nf'
 include { GATK_DUPLICATES } from './modules/gatkduplicates.nf'
 include { GATK_BQSR } from './modules/gatkbqsr.nf'
 include { GATK_HAPLOTYPE } from './modules/gatkhaplotype.nf'
+include { GATK_GVCF } from './modules/gatkgvcf.nf'
 
 workflow {
 
@@ -70,6 +71,15 @@ workflow {
         params.fasta_dict,
         params.fasta_gzi
     )
+
+	GATK_GVCF(
+        GATK_HAPLOTYPE.out.gvcf,
+        GATK_HAPLOTYPE.out.tbi,
+        params.fasta,
+        params.fasta_fai,
+        params.fasta_dict,
+        params.fasta_gzi
+    )
     
     publish:
     fastqc_zip = FASTQC.out.zip
@@ -87,7 +97,10 @@ workflow {
     gatk_bqsr_bam = GATK_BQSR.out.bam
     gatk_bqsr_bai = GATK_BQSR.out.bai
     gatk_bqsr_table = GATK_BQSR.out.table
-    gatk_haplotype_vcf = GATK_HAPLOTYPE.out.vcf
+    gatk_haplotype_gvcf = GATK_HAPLOTYPE.out.gvcf
+    gatk_haplotype_tbi = GATK_HAPLOTYPE.out.tbi
+    gatk_gvcf_vcf = GATK_GVCF.out.vcf
+    gatk_gvcf_tbi = GATK_GVCF.out.tbi
     
 }
 
@@ -138,7 +151,16 @@ output {
     gatk_bqsr_table {
         path 'gatk_bqsr'
     }
-    gatk_haplotype_vcf {
+    gatk_haplotype_gvcf {
         path 'gatk_haplotype'
+    }
+    gatk_haplotype_tbi {
+        path 'gatk_haplotype'
+    }
+    gatk_gvcf_vcf {
+        path'gatk_gvcf'
+    }
+    gatk_gvcf_tbi {
+        path'gatk_gvcf'
     }
 }
