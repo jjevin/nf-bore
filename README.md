@@ -19,7 +19,7 @@ This project aims to create a streamlined variant calling pipeline using Nextflo
 
 This project was developed with the following software and versions:
 
-* Nextflow version >=26.04
+* Nextflow version >= 26.04
 * Docker version >= 28.4.0
 * OpenJDK version >= 25
 * Approximately 10GB for reference files and reads
@@ -69,7 +69,6 @@ Configuration is outlined in the ```nextflow.config``` file. Individual paramete
 | ```fasta```     | Path to fasta files       | ```data/ref/hg38.analysisSet.fa.gz```    |
 | ```dbsnp```     | Path to dbsnp file        | ```data/ref/dbsnp_146.hg38.vcf.gz```     |
 | ```dbsnp_tbi``` | Path to dbsnp tbi file    | ```data/ref/dbsnp_146.hg38.vcf.gz.tbi``` |
-|                 |                           |                                          |
 
 ## Running 
 
@@ -79,9 +78,7 @@ There is currently not much in the way of configuration for this project, so run
 nextflow run main.nf
 ```
 
-It is recommended to run the pipeline with the resume flag when repeating procedures, as this allows 
-
-The typical runtime on my machine is approximately 15 minutes, with most of that being spent on the haplotype caller module. 
+It is recommended to run the pipeline with the ```-resume``` flag when repeating procedures, as this allows for cached results to be used. The typical runtime on my machine is approximately 15 minutes, with most of that being spent on the haplotype caller module. 
 
 ### Outputs
 
