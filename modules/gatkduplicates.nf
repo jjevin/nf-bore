@@ -21,6 +21,5 @@ process GATK_DUPLICATES {
 		-O ${meta.id}_markdup.bam \
 		-M ${meta.id}_metrics.txt \
 		--CREATE_INDEX true \
-		--TMP_DIR tmp
 	"""
 }

@@ -37,9 +37,15 @@ workflow {
     ch_fasta = Channel.value(file(params.fasta))
     // "hg38.analysisSet.fa.gz.*" matches .amb, .ann, .bwt, .pac, .sa
     // but NOT hg38.analysisSet.fa.gz itself
-    ch_index = Channel.fromPath("${params.fasta}.*").collect()
+    def fasta_base = params.fasta.substring(
+        0, params.fasta.lastIndexOf('.fa')
+    )
+    Channel.fromPath("${fasta_base}.*")
+    	.filter { p -> p != file(params.fasta) }
+        .collect()
+    	.set { ch_fasta_index }
 
-    BWA_MEM(TRIMMOMATIC.out.reads, ch_fasta, ch_index)
+    BWA_MEM(TRIMMOMATIC.out.reads, ch_fasta, ch_fasta_index)
 
     // Merging samples sequenced across multiple lanes
     // TODO: Groovy syntax, def vs no def in dynamic closure?
@@ -53,42 +59,37 @@ workflow {
     SAMTOOLS_MERGE(ch_bams_merged)
     GATK_DUPLICATES(SAMTOOLS_MERGE.out.bam)
 
+	ch_dbsnp     = Channel.value(file(params.dbsnp))
+    ch_dbsnp_tbi = Channel.value(file(params.dbsnp_tbi))
+    
     GATK_BQSR(
         GATK_DUPLICATES.out.bam,
         GATK_DUPLICATES.out.bai,
-        params.fasta,
-        params.fasta_fai,
-        params.fasta_dict,
-        params.fasta_gzi,
-        params.dbsnp,
-        params.dbsnp_tbi,
+        ch_fasta,
+        ch_fasta_index,
+        ch_dbsnp,
+        ch_dbsnp_tbi
     )
 
     GATK_HAPLOTYPE(
         GATK_BQSR.out.bam,
         GATK_BQSR.out.bai,
-        params.fasta,
-        params.fasta_fai,
-        params.fasta_dict,
-        params.fasta_gzi
+        ch_fasta,
+        ch_fasta_index
     )
 
 	GATK_GVCF(
         GATK_HAPLOTYPE.out.gvcf,
         GATK_HAPLOTYPE.out.tbi,
-        params.fasta,
-        params.fasta_fai,
-        params.fasta_dict,
-        params.fasta_gzi
+        ch_fasta,
+        ch_fasta_index
     )
 
     GATK_FILTER(
         GATK_GVCF.out.vcf,
     	GATK_GVCF.out.tbi,
-        params.fasta,
-        params.fasta_fai,
-        params.fasta_dict,
-        params.fasta_gzi
+        ch_fasta,
+        ch_fasta_index
     )
     
     publish:
@@ -169,10 +170,10 @@ output {
         path 'gatk_haplotype'
     }
     gatk_gvcf_vcf {
-        path'gatk_gvcf'
+        path 'gatk_gvcf'
     }
     gatk_gvcf_tbi {
-        path'gatk_gvcf'
+        path 'gatk_gvcf'
     }
     gatk_filter_vcf {
         path 'gatk_filter'

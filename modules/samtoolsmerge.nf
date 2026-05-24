@@ -18,7 +18,7 @@ process SAMTOOLS_MERGE {
 
     script:
     """
-	samtools merge ${meta.id}_merged.bam ${bams}
+	samtools merge ${meta.id}_merged.bam ${bams} -f
 	samtools index ${meta.id}_merged.bam
 	"""
     /* Common samtools merge flags to consider:

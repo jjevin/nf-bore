@@ -10,7 +10,6 @@ process BWA_MEM {
     input:
     tuple val(meta), path(reads)
     path fasta
-    // indices not referred to directly, but scanned for by bwa mem
     path index 
 
     output:

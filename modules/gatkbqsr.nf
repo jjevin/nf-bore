@@ -10,9 +10,7 @@ process GATK_BQSR {
     tuple val(meta), path(bam)
     tuple val(meta_bai), path(bai)
     path fasta
-    path fasta_fai
-    path fasta_dict
-    path fasta_gzi
+    path fasta_index
     path dbsnp
     path dbsnp_tbi
     
@@ -36,5 +34,4 @@ process GATK_BQSR {
 		-O ${meta.id}_recal.bam \
 		--create-output-bam-index true
 	"""
-    // TODO: --tmp_dir not a recognized option anymore?
 }

@@ -10,9 +10,7 @@ process GATK_HAPLOTYPE {
     tuple val(meta), path(bam)
     tuple val(meta_bai), path(bai)
     path fasta
-    path fasta_fai
-    path fasta_dict
-    path fasta_gzi
+    path fasta_index
     
     output:
     tuple val(meta), path("${meta.id}.g.vcf.gz"), 	  emit: gvcf

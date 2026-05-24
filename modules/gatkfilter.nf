@@ -10,9 +10,7 @@ process GATK_FILTER {
     tuple val(meta), path(vcf)
     tuple val(meta_tbi), path(tbi)
     path fasta
-    path fasta_fai
-    path fasta_dict
-    path fasta_gzi
+    path fasta_index
 
     output:
     tuple val(meta), path("${meta.id}_filtered.vcf.gz"),     emit: vcf

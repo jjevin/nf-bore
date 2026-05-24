@@ -10,10 +10,8 @@ process GATK_GVCF {
     tuple val(meta), path(gvcf)
     tuple val(meta_tbi), path(tbi)
     path fasta
-    path fasta_fai
-    path fasta_dict
-    path fasta_gzi
-    
+    path fasta_index
+
     output:
     tuple val(meta), path("${meta.id}.vcf.gz"), emit: vcf
     tuple val(meta), path("${meta.id}.vcf.gz.tbi"), emit: tbi
