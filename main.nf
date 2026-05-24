@@ -9,6 +9,7 @@ include { GATK_DUPLICATES } from './modules/gatkduplicates.nf'
 include { GATK_BQSR } from './modules/gatkbqsr.nf'
 include { GATK_HAPLOTYPE } from './modules/gatkhaplotype.nf'
 include { GATK_GVCF } from './modules/gatkgvcf.nf'
+include { GATK_FILTER } from './modules/gatkfilter.nf'
 
 workflow {
 
@@ -80,6 +81,15 @@ workflow {
         params.fasta_dict,
         params.fasta_gzi
     )
+
+    GATK_FILTER(
+        GATK_GVCF.out.vcf,
+    	GATK_GVCF.out.tbi,
+        params.fasta,
+        params.fasta_fai,
+        params.fasta_dict,
+        params.fasta_gzi
+    )
     
     publish:
     fastqc_zip = FASTQC.out.zip
@@ -101,7 +111,8 @@ workflow {
     gatk_haplotype_tbi = GATK_HAPLOTYPE.out.tbi
     gatk_gvcf_vcf = GATK_GVCF.out.vcf
     gatk_gvcf_tbi = GATK_GVCF.out.tbi
-    
+	gatk_filter_vcf = GATK_FILTER.out.vcf
+    gatk_filter_tbi = GATK_FILTER.out.tbi
 }
 
 // TODO: Compare against original output syntax (per-process)
@@ -162,5 +173,11 @@ output {
     }
     gatk_gvcf_tbi {
         path'gatk_gvcf'
+    }
+    gatk_filter_vcf {
+        path 'gatk_filter'
+    }
+    gatk_filter_tbi {
+        path 'gatk_filter'
     }
 }
